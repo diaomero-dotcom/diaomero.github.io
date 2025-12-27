@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>和解書產生器</title>
+
+<style>
+body {
+  font-family: "Microsoft JhengHei", sans-serif;
+  line-height: 2;
+}
+.doc {
+  width: 720px;
+  margin: auto;
+}
+h2 {
+  text-align: center;
+  letter-spacing: 10px;
+}
+input, textarea {
+  border: none;
+  border-bottom: 1px solid #000;
+  font-size: 16px;
+}
+textarea {
+  width: 100%;
+  resize: none;
+}
+.center {
+  text-align: center;
+  margin-top: 40px;
+}
+.result {
+  margin-top: 40px;
+  border-top: 1px dashed #aaa;
+  padding-top: 20px;
+  white-space: pre-line;
+}
+.result pre {
+  font-family: "Microsoft JhengHei", sans-serif;
+  white-space: pre-line;
+}
+.no-copy {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+}
+@media print {
+  input, textarea, button {
+    display: none;
+  }
+  body {
+    margin: 20mm;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="doc">
+
+<h2>和解書</h2>
+
+<p>立和解書人：榮帝科技股份有限公司（以下簡稱甲方）</p>
+
+<p>
+立和解書人：
+<input type="text" id="bName" style="width:300px;">
+（以下簡稱乙方）
+</p>
+
+<p>
+茲因
+<textarea id="reason" rows="2" placeholder="請輸入和解內容說明"></textarea>
+</p>
+
+<br>
+
+<p>立和解書人</p>
+
+<p>
+甲方：(簽章)<br>
+公司名稱：榮帝科技股份有限公司<br>
+負責人：陳明賢<br>
+公司統編：24963309<br>
+地址：台北市長安東路一段18號7樓708室
+</p>
+
+<br>
+
+<p>
+乙方：(簽章)<br>
+姓名：
+<input type="text" id="bFullName"><br>
+身分證字號：
+<input type="text" id="bID"><br>
+出生年月日：
+<input type="text" id="bBirth"><br>
+地址：
+<input type="text" id="bAddress" style="width:400px;">
+</p>
+
+<div class="center">
+中　華　民　國　
+<input type="text" id="year" style="width:50px;"> 年　
+<input type="text" id="month" style="width:40px;"> 月　
+<input type="text" id="day" style="width:40px;"> 日
+</div>
+
+<div class="result no-copy" id="output"></div>
+
+<br>
+<!-- 按鈕區 -->
+<button onclick="generate()">生成完整文字</button>
+<button onclick="window.print()">列印 / 匯出 PDF</button>
+<button onclick="exportWord()">匯出 Word</button>
+<button onclick="resetForm()">重新輸入</button>
+
+<script>
+// 生成和解書
+function generate() {
+  output.innerHTML = `
+<pre>
+                 和解書
+立和解書人：榮帝科技股份有限公司（以下簡稱甲方）
+立和解書人：${bName.value}（以下簡稱乙方）
+
+茲因 ${reason.value}
+
+立和解書人
+甲方：(簽章)
+公司名稱：榮帝科技股份有限公司
+負責人：陳明賢
+公司統編：24963309
+地址：台北市長安東路一段18號7樓708室
+
+乙方：(簽章)
+姓名：${bFullName.value}
+身分證字號：${bID.value}
+出生年月日：${bBirth.value}
+地址：${bAddress.value}
+</pre>
+
+<div style="text-align:center; margin-top:30px;">
+中　華　民　國　${year.value} 年 ${month.value} 月 ${day.value} 日
+</div>
+  `;
+}
+
+// 匯出 Word
+function exportWord() {
+  const content = output.innerHTML;
+  const html =
+    `<html><head><meta charset="UTF-8"></head><body>${content}</body></html>`;
+  const blob = new Blob(['\ufeff', html], { type: 'application/msword' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "和解書.doc";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// 重新輸入
+function resetForm() {
+  document.querySelectorAll("input").forEach(input => input.value = "");
+  document.querySelectorAll("textarea").forEach(textarea => textarea.value = "");
+  document.getElementById("output").innerHTML = "";
+}
+
+// 防複製功能
+document.addEventListener("contextmenu", function(e) {
+  if (e.target.closest(".no-copy")) e.preventDefault();
+});
+document.addEventListener("keydown", function(e) {
+  if (e.ctrlKey && e.key.toLowerCase() === "c") {
+    if (document.activeElement.closest(".no-copy")) e.preventDefault();
+  }
+});
+document.addEventListener("copy", function(e) {
+  if (document.activeElement.closest(".no-copy")) {
+    alert("本文件為內部文件，禁止複製");
+    e.preventDefault();
+  }
+});
+</script>
+
+</body>
+</html>
+
+
+
+$ git add index.html
+
+$ git commit -m "add index"
+[master (root-commit) 80450b2] add index
+ 1 file changed, 10 insertions(+)
+ create mode 100644 index.html
